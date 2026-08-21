@@ -5,7 +5,7 @@ export default function BackgroundScene() {
   useParticles();
   return (
     <>
-      <div className="canvas-cont"><canvas id="canvas3d" ref={canvasRef} /></div>
+      <div className="fixed h-full left-10"><canvas id="canvas3d" ref={canvasRef} /></div>
       <div id="particles-container"><canvas id="particles-canvas" /></div>
     </>
   );

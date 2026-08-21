@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
+
 import BackgroundScene from "../components/BackgroundScene";
-import Hero, { ResumeLauncher } from "../components/Hero";
+import Hero from "../components/Hero";
 import ProjectsSection from "../components/ProjectsSection";
-import Timeline from "../components/Timeline";
-import Hobbies from "../components/Hobbies";
-import CommandPalette from "../components/CommandPalette";
+import CertificatesSection from '../components/CertificatesSection';
 
 export default function HomePage() {
   const [recruiter, setRecruiter] = useState(
@@ -52,45 +51,20 @@ export default function HomePage() {
   const triggerResume = () =>
     document.querySelector(".footer-resume-launcher .resume-trigger")?.click();
   return (
-    <>
+    <div className="my-10">
       <BackgroundScene />
-      <CommandPalette
-        open={palette}
-        onClose={() => setPalette(false)}
-        onProject={(id) => {
-          selectProject(id);
-          document
-            .getElementById("timeline")
-            ?.scrollIntoView({ behavior: "smooth" });
-        }}
-        onRecruiter={toggleRecruiter}
-        onResume={triggerResume}
-      />
-      <main>
+      {/* Glows */}
+      <div className="fixed -left-32 top-20 h-72 w-72 rounded-full bg-purple-600/15 blur-3xl" />
+      <div className="fixed -right-32 bottom-20 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+      <div className="fixed left-1/2 top-1/4 h-64 w-64 -translate-x-1/2 rounded-full bg-fuchsia-500/10 blur-3xl" />
+      <main className="px-10 md:px-20">
         <Hero />
         <ProjectsSection
           activeProject={activeProject}
           onSelect={selectProject}
         />
-        <Timeline activeProject={activeProject} onSelect={selectProject} />
-        <Hobbies />
+        <CertificatesSection/>
       </main>
-      <footer>
-        <div className="socials">
-          <a
-            href="https://github.com/squidward404"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
-          <a href="https://t.me/A_t_o_m_ic" target="_blank" rel="noreferrer">
-            Telegram
-          </a>
-          <a href="mailto:befikirshimelis20@gmail.com">Gmail</a>
-        </div>
-        <ResumeLauncher footer />
-      </footer>
-    </>
+    </div>
   );
 }

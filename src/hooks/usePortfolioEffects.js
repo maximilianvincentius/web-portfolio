@@ -80,146 +80,263 @@ export function useTypingEffect() {
   }, []);
 }
 
+const GALAXY_CONFIG = {
+  // Binary tokens rendered on particles
+  binaryTokens: ['0', '1'],
+  
+  // Particle counts & size
+  countDesktop: 15000,
+  countMobile: 10000,
+  particleSizeDesktop: 0.16,
+  particleSizeMobile: 0.10,
+
+  // Galaxy Shape Math (Matched to Bode's Galaxy M81)
+  arms: 2,                  // M81 has 2 major prominent spiral arms
+  radius: 29,               // Disk radius
+  spin: -1.8,               // Arm winding curve
+  randomness: 0.45,         // Scatter dispersion off the spine
+  power: 1.8,               // Center concentration factor
+  
+  // Angle & Elliptical Tilt
+  tiltAngleX: Math.PI * 0.35, 
+  tiltAngleZ: -Math.PI * 0.12, 
+  ellipseStretchY: 0.7,    // Squashes circular plane into an elliptical disk
+
+  // M81 Color Palette
+  coreColor: '#fff4d6',     // Warm golden white central bulge
+  midColor: '#3a7bd5',      // Deep cosmic blue spiral disc
+  armHighlights: '#f857a6', // Pink/Magenta active starburst clusters
+  outerColor: '#121936',    // Dark navy outer halo
+
+  // Selective Outer Animation
+  rotationSpeed: 0.0015,    // Speed for outer particles
+  staticCoreRadius: 0.30,   // Central core ratio (0% - 30% of radius stays still)
+};
+
 export function useThreeScene() {
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const mobile = window.matchMedia('(max-width: 768px)').matches;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
-    camera.position.z = 12;
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    
+    camera.position.set(0, 0, 16);
+    camera.lookAt(0, 0, 0);
+
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2));
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-    const directional = new THREE.DirectionalLight(0xffffff, 1);
-    directional.position.set(10, 10, 5); scene.add(directional);
-    const point = new THREE.PointLight(0x7317cf, 1, 20);
-    point.position.set(5, 5, 5); scene.add(point);
+    const galaxyGroup = new THREE.Group();
+    galaxyGroup.rotation.x = GALAXY_CONFIG.tiltAngleX;
+    galaxyGroup.rotation.z = GALAXY_CONFIG.tiltAngleZ;
+    scene.add(galaxyGroup);
 
-    const group = new THREE.Group();
-    group.position.set(2, 0, 0); group.rotation.z = 0.5; scene.add(group);
-    const initial = { pos: [2,0,0], rot: [0,0,0.5], scale: [1,1,1] };
 
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1.5, mobile ? 36 : 64, mobile ? 36 : 64),
-      new THREE.MeshPhongMaterial({ map: makeSaturnTexture(), bumpScale: 0.05, specular: new THREE.Color(0x333333), shininess: 5 })
-    );
-    group.add(sphere);
+    const createCrispBinaryTexture = (text) => {
+      const texCanvas = document.createElement('canvas');
+      texCanvas.width = 128;
+      texCanvas.height = 128;
+      const ctx = texCanvas.getContext('2d');
+      
+      ctx.font = '700 44px "Courier New", monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 64, 64);
+      
+      const texture = new THREE.CanvasTexture(texCanvas);
+      texture.minFilter = THREE.NearestFilter;
+      texture.magFilter = THREE.NearestFilter;
+      return texture;
+    };
 
-    const ringTexture = makeRingTexture();
-    const inner = new THREE.Mesh(
-      new THREE.RingGeometry(2.5, 4, mobile ? 42 : 64),
-      new THREE.MeshPhongMaterial({ map: ringTexture, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false })
-    );
-    inner.rotation.x = Math.PI / 2; group.add(inner);
-    const outer = new THREE.Mesh(
-      new THREE.RingGeometry(4, 5.5, mobile ? 42 : 64),
-      new THREE.MeshPhongMaterial({ map: ringTexture, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false })
-    );
-    outer.rotation.x = Math.PI / 2; group.add(outer);
+    const textures = GALAXY_CONFIG.binaryTokens.map(text => createCrispBinaryTexture(text));
 
-    const stars = makeStarField(mobile ? 340 : 760, 120, mobile ? 0.085 : 0.11, 0.6, 0xffffff);
-    const slowStars = makeStarField(mobile ? 140 : 300, 170, mobile ? 0.11 : 0.16, 0.2, 0xb8d4ff);
-    scene.add(stars, slowStars);
+    const totalParticles = mobile ? GALAXY_CONFIG.countMobile : GALAXY_CONFIG.countDesktop;
+    const countPerTexture = Math.floor(totalParticles / textures.length);
+
+    const colorCore = new THREE.Color(GALAXY_CONFIG.coreColor);
+    const colorMid = new THREE.Color(GALAXY_CONFIG.midColor);
+    const colorHighlight = new THREE.Color(GALAXY_CONFIG.armHighlights);
+    const colorOuter = new THREE.Color(GALAXY_CONFIG.outerColor);
+
+    textures.forEach((texture) => {
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(countPerTexture * 3);
+      const colors = new Float32Array(countPerTexture * 3);
+      const spinSpeeds = new Float32Array(countPerTexture);
+
+      for (let i = 0; i < countPerTexture; i++) {
+        const r = Math.pow(Math.random(), GALAXY_CONFIG.power) * GALAXY_CONFIG.radius;
+        
+        // 2-Arm Spiral Math
+        const armIndex = i % GALAXY_CONFIG.arms;
+        const phi = (armIndex * 2 * Math.PI) / GALAXY_CONFIG.arms;
+        const spinAngle = r * GALAXY_CONFIG.spin;
+
+        // Dispersion & Scatter
+        const spread = GALAXY_CONFIG.randomness * (r * 0.35 + 0.2);
+        const randomX = Math.pow(Math.random(), 2) * (Math.random() < 0.5 ? 1 : -1) * spread;
+        const randomY = Math.pow(Math.random(), 2) * (Math.random() < 0.5 ? 1 : -1) * spread * 0.3;
+        const randomZ = Math.pow(Math.random(), 2) * (Math.random() < 0.5 ? 1 : -1) * spread;
+
+        // Apply Elliptical squashing along Y axis
+        const rawX = Math.cos(phi + spinAngle) * r + randomX;
+        const rawY = (Math.sin(phi + spinAngle) * r + randomZ) * GALAXY_CONFIG.ellipseStretchY;
+
+        positions[i * 3] = rawX;
+        positions[i * 3 + 1] = rawY;
+        positions[i * 3 + 2] = randomY; 
+
+        const coreThreshold = GALAXY_CONFIG.radius * GALAXY_CONFIG.staticCoreRadius;
+        if (r > coreThreshold) {
+          spinSpeeds[i] = ((r - coreThreshold) / (GALAXY_CONFIG.radius - coreThreshold)) * GALAXY_CONFIG.rotationSpeed;
+        } else {
+          spinSpeeds[i] = 0;
+        }
+
+        // Color blending for M81 palette
+        const mixedColor = colorCore.clone();
+        
+        if (r < GALAXY_CONFIG.radius * 0.2) {
+          mixedColor.lerp(colorCore, r / (GALAXY_CONFIG.radius * 0.2));
+        } else if (r < GALAXY_CONFIG.radius * 0.65) {
+          const isHighlight = Math.random() < 0.18;
+          mixedColor.lerp(isHighlight ? colorHighlight : colorMid, (r - GALAXY_CONFIG.radius * 0.2) / (GALAXY_CONFIG.radius * 0.45));
+        } else {
+          mixedColor.lerp(colorOuter, (r - GALAXY_CONFIG.radius * 0.65) / (GALAXY_CONFIG.radius * 0.35));
+        }
+
+        colors[i * 3] = mixedColor.r;
+        colors[i * 3 + 1] = mixedColor.g;
+        colors[i * 3 + 2] = mixedColor.b;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('spinSpeed', new THREE.BufferAttribute(spinSpeeds, 1));
+
+      const material = new THREE.PointsMaterial({
+        size: mobile ? GALAXY_CONFIG.particleSizeMobile : GALAXY_CONFIG.particleSizeDesktop,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        map: texture,
+        transparent: true,
+        alphaTest: 0.08,
+        opacity: 0.85
+      });
+
+      galaxyGroup.add(new THREE.Points(geometry, material));
+    });
 
     const pointer = { x: 0, y: 0 };
     const onMove = e => {
-      pointer.x = ((e.clientX / innerWidth) - 0.5) * (mobile ? 0.35 : 0.7);
-      pointer.y = ((e.clientY / innerHeight) - 0.5) * (mobile ? 0.15 : 0.35);
+      pointer.x = ((e.clientX / window.innerWidth) - 0.5) * (mobile ? 0.2 : 0.4);
+      pointer.y = ((e.clientY / window.innerHeight) - 0.5) * (mobile ? 0.1 : 0.2);
     };
     window.addEventListener('mousemove', onMove);
 
-    let cometHead, cometTrail, trailAttr, cometPoints = [];
-    const cometState = { active:false, progress:0, nextSpawnAt:performance.now() + (mobile?4200:3200), start:new THREE.Vector3(), end:new THREE.Vector3() };
-    if (!mobile) {
-      cometHead = new THREE.Mesh(new THREE.SphereGeometry(0.08,14,14), new THREE.MeshBasicMaterial({color:0xbfe7ff,transparent:true,opacity:0.95}));
-      cometHead.visible=false; scene.add(cometHead);
-      const count=26, positions=new Float32Array(count*3);
-      for(let i=0;i<count;i++) cometPoints.push(new THREE.Vector3(9999,9999,9999));
-      trailAttr=new THREE.BufferAttribute(positions,3);
-      const geo=new THREE.BufferGeometry(); geo.setAttribute('position',trailAttr);
-      cometTrail=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x7ac8ff,transparent:true,opacity:0.58,blending:THREE.AdditiveBlending,depthWrite:false}));
-      cometTrail.visible=false; scene.add(cometTrail);
-    }
-    const spawn = now => {
-      cometState.active=true; cometState.progress=0;
-      cometState.start.set(-14-Math.random()*4,5+Math.random()*4,-8-Math.random()*6);
-      cometState.end.set(13+Math.random()*4,-4-Math.random()*2.5,-2+Math.random()*3);
-      cometHead.position.copy(cometState.start); cometHead.visible=true; cometTrail.visible=true;
-      cometPoints.forEach(p=>p.copy(cometState.start));
-      cometState.nextSpawnAt=now+3400+Math.random()*4600;
-    };
-
     const reset = () => {
-      group.position.set(...initial.pos); group.rotation.set(...initial.rot); group.scale.set(...initial.scale);
+      galaxyGroup.position.set(0, 0, 0);
     };
-    const finalPose = () => { group.position.set(0,-3,0); group.rotation.set(0,0,0); group.scale.set(.6,.6,.6); };
+    const finalPose = () => {
+      galaxyGroup.position.set(0, -2, 0);
+      galaxyGroup.scale.set(0.6, 0.6, 0.6);
+    };
     reset();
 
     const master = gsap.timeline({
-      defaults:{ease:'none'},
-      scrollTrigger:{
-        trigger:'body', start:mobile?'top+=40 top':'top top', end:'bottom bottom',
-        scrub:mobile?.45:1.5, invalidateOnRefresh:!mobile, fastScrollEnd:!mobile,
-        onUpdate:self=>{if(mobile&&self.progress>=.985)finalPose();},
-        onLeave:()=>mobile&&finalPose(), onLeaveBack:()=>mobile&&reset(),
-        onRefresh:()=>{if(mobile&&scrollY<=2)reset(); else if(mobile&&(innerHeight+scrollY)>=document.documentElement.scrollHeight-2)finalPose();}
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: 'body',
+        start: mobile ? 'top+=40 top' : 'top top',
+        end: 'bottom bottom',
+        scrub: mobile ? 0.45 : 1.5,
+        invalidateOnRefresh: !mobile,
+        fastScrollEnd: !mobile,
+        onUpdate: self => { if (mobile && self.progress >= 0.985) finalPose(); },
+        onLeave: () => mobile && finalPose(),
+        onLeaveBack: () => mobile && reset(),
       }
     });
-    master.to(group.position,{x:-2,y:0,z:0,duration:1},0);
-    master.to(group.rotation,{x:0,y:Math.PI*.3,z:0,duration:1},0);
-    master.to(group.position,{x:1.5,y:-.5,z:0,duration:1},1);
-    master.to(group.rotation,{x:0,y:Math.PI*.6,z:0,duration:1},1);
-    master.to(group.scale,{x:.7,y:.7,z:.7,duration:1},1);
-    master.to(group.position,{x:0,y:-3,z:0,duration:1},2);
-    master.to(group.rotation,{x:0,y:0,z:0,duration:1},2);
-    master.to(group.scale,{x:.6,y:.6,z:.6,duration:1},2);
 
-    let cosmic=0, frame;
-    const animate = now => {
-      frame=requestAnimationFrame(animate); cosmic+=.01;
-      sphere.rotation.y += mobile?.0011:.002; inner.rotation.z += .0009;
-      stars.rotation.y += .00015; stars.rotation.x=pointer.y*.022;
-      slowStars.rotation.y -= .0001; slowStars.rotation.x=pointer.y*.014;
-      camera.position.x += (pointer.x-camera.position.x)*.035;
-      camera.position.y += (pointer.y-camera.position.y)*.035;
-      point.intensity=1+Math.sin(cosmic*.72)*.12;
-      if(!mobile&&cometHead&&cometTrail){
-        if(!cometState.active && now>=cometState.nextSpawnAt) spawn(now);
-        if(cometState.active){
-          cometState.progress += .016;
-          if(cometState.progress>=1){cometState.active=false;cometHead.visible=false;cometTrail.visible=false;}
-          else {
-            cometHead.position.lerpVectors(cometState.start,cometState.end,cometState.progress);
-            for(let i=cometPoints.length-1;i>0;i--) cometPoints[i].copy(cometPoints[i-1]);
-            cometPoints[0].copy(cometHead.position);
-            for(let i=0;i<cometPoints.length;i++){const p=cometPoints[i]; trailAttr.array[i*3]=p.x;trailAttr.array[i*3+1]=p.y;trailAttr.array[i*3+2]=p.z;}
-            trailAttr.needsUpdate=true;
-          }
+    master.to(galaxyGroup.position, { x: -2, y: 1, z: 0, duration: 1 }, 0);
+    master.to(galaxyGroup.position, { x: 1.5, y: -0.5, z: 0, duration: 1 }, 1);
+    master.to(galaxyGroup.position, { x: 0, y: -2, z: 0, duration: 1 }, 2);
+    master.to(galaxyGroup.scale, { x: 0.6, y: 0.6, z: 0.6, duration: 1 }, 2);
+
+    // ==========================================
+    // 4. ANIMATION LOOP (OUTER PARTICLE ROTATION)
+    // ==========================================
+    let frame;
+    const animate = () => {
+      frame = requestAnimationFrame(animate);
+
+      // Rotate individual outer particles along their spiral orbit
+      galaxyGroup.children.forEach((points) => {
+        const positions = points.geometry.attributes.position.array;
+        const spinSpeeds = points.geometry.attributes.spinSpeed.array;
+
+        for (let i = 0; i < spinSpeeds.length; i++) {
+          const speed = spinSpeeds[i];
+          if (speed === 0) continue; // Skip static core particles
+
+          const idx = i * 3;
+          const x = positions[idx];
+          const y = positions[idx + 1];
+
+          // Orbital rotation matrix around galaxy plane
+          const cos = Math.cos(speed);
+          const sin = Math.sin(speed);
+
+          positions[idx] = x * cos - y * sin;
+          positions[idx + 1] = x * sin + y * cos;
         }
-      }
-      renderer.render(scene,camera);
+
+        points.geometry.attributes.position.needsUpdate = true;
+      });
+
+      // Mouse Parallax
+      camera.position.x += (pointer.x * 3 - camera.position.x) * 0.04;
+      camera.position.y += (pointer.y * 2 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(scene, camera);
     };
     animate();
 
-    const resize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,window.matchMedia('(max-width:768px)').matches?1.5:2));ScrollTrigger.refresh();};
-    window.addEventListener('resize',resize);
-
-    const techTween=gsap.fromTo('.tech-icon',{y:30,opacity:0},{y:0,opacity:1,duration:.6,stagger:.1,ease:'power2.out',scrollTrigger:{trigger:'#hero',start:'top 80%',toggleActions:'play none none none'}});
-    const socialTween=gsap.from('.socials a',{scrollTrigger:{trigger:'footer',start:'top 85%'},y:20,opacity:0,duration:.5,stagger:.1,ease:'power1.out'});
+    // Full viewport canvas resize handler
+    const resize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.matchMedia('(max-width:768px)').matches ? 1.5 : 2));
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener('resize', resize);
 
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener('mousemove',onMove);
-      window.removeEventListener('resize',resize);
-      master.scrollTrigger?.kill(); master.kill(); techTween.scrollTrigger?.kill(); techTween.kill(); socialTween.scrollTrigger?.kill(); socialTween.kill();
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('resize', resize);
+      master.scrollTrigger?.kill();
+      master.kill();
       renderer.dispose();
-      scene.traverse(obj=>{ if(obj.geometry) obj.geometry.dispose(); if(obj.material){const mats=Array.isArray(obj.material)?obj.material:[obj.material];mats.forEach(m=>{m.map?.dispose();m.dispose();});}});
+      textures.forEach(t => t.dispose());
+      galaxyGroup.children.forEach(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) child.material.dispose();
+      });
     };
   }, []);
+
   return canvasRef;
 }
 
