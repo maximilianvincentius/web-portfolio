@@ -86,21 +86,21 @@ const GALAXY_CONFIG = {
   
   // Particle counts & size
   countDesktop: 15000,
-  countMobile: 10000,
+  countMobile: 15000,
   particleSizeDesktop: 0.16,
-  particleSizeMobile: 0.10,
+  particleSizeMobile: 0.2,
 
   // Galaxy Shape Math (Matched to Bode's Galaxy M81)
-  arms: 2,                  // M81 has 2 major prominent spiral arms
-  radius: 29,               // Disk radius
-  spin: -1.8,               // Arm winding curve
-  randomness: 0.45,         // Scatter dispersion off the spine
-  power: 1.8,               // Center concentration factor
+  arms: 3,                  // M81 has 2 major prominent spiral arms
+  radius: 80,               // Disk radius
+  spin: -1.5,               // Arm winding curve
+  randomness: 0.25,         // Scatter dispersion off the spine
+  power: 2,               // Center concentration factor
   
   // Angle & Elliptical Tilt
   tiltAngleX: Math.PI * 0.35, 
   tiltAngleZ: -Math.PI * 0.12, 
-  ellipseStretchY: 0.7,    // Squashes circular plane into an elliptical disk
+  ellipseStretchY: 0.8,    // Squashes circular plane into an elliptical disk
 
   // M81 Color Palette
   coreColor: '#fff4d6',     // Warm golden white central bulge
@@ -109,8 +109,8 @@ const GALAXY_CONFIG = {
   outerColor: '#121936',    // Dark navy outer halo
 
   // Selective Outer Animation
-  rotationSpeed: 0.0015,    // Speed for outer particles
-  staticCoreRadius: 0.30,   // Central core ratio (0% - 30% of radius stays still)
+  rotationSpeed: 0.002,    // Speed for outer particles
+  staticCoreRadius: 0.25,   // Central core ratio (0% - 30% of radius stays still)
 };
 
 export function useThreeScene() {

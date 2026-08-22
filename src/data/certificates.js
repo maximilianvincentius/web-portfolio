@@ -73,6 +73,15 @@ export const certificates = [
     date: "2023",
   },
   {
+    id: "NCSS_CHALLENGE_2023",
+    title: "NCSS Challenge 2023",
+    description:
+      "Awarded for achieved perfect socre in the NCSS Challenge (Intermediate) 2023 July",
+    image: "/assets/certificates/NCSS_CHALLENGE_2023.jpg",
+    issuedBy: "NCSS",
+    date: "2023",
+  },
+  {
     id: "AI_SCHOLARS_PROGRAM_2024",
     title: "AI Scholars Program",
     description: "Awarded for Completion AI Scholars Program",
@@ -88,5 +97,5 @@ export const certificates = [
     image: "/assets/certificates/ONLINE_INTERNATIONAL_MATH_CHALLENGE_2024.jpg",
     issuedBy: "Online International Math Challenge (OIMC)",
     date: "2024",
-  }
+  },
 ];

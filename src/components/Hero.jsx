@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { technologies } from "../data/technologies";
 import { Github, Linkedin, FileText, Mail } from "lucide-react";
-// import resumePath from '../../pub'
 
-const resumePath = "../../public/assets/drawing1.jpg";
+const resumePath = "../../public/assets/MAXIMILIAN_VINCENTIUS_RESUME.pdf";
 
 function TypingEffect({
   phrases = ["Tech enthusiast", "Future Computer Science Student"],
@@ -73,13 +72,13 @@ export default function Hero() {
           <div className="text-white">
             <div className="flex flex-col gap-y-3 md:gap-y-0 md:flex-row gap-x-5 items-end md:items-center md:justify-center text-end md:min-w-0">
               <a
-                href="mailto:felix.rustan@gmail.com"
+                href="mailto:maximilianvincentius@gmail.com"
                 target="_blank"
                 rel="noreferrer"
                 className="group flex items-center bg-white/5 backdrop-blur-md border border-white/10 p-2 rounded-xl text-white font-mono text-[10px] transition-all duration-300 hover:bg-white/15"
               >
                 <Mail size={18} className="shrink-0" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:max-w-[100px] group-hover:ml-2 opacity-0 group-hover:opacity-100">
+                <span  className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:max-w-[100px] group-hover:ml-2 opacity-0 group-hover:opacity-100">
                   Gmail
                 </span>
               </a>
