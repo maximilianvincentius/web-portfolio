@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { certificates } from '../data/certificates';
 
-
+const SCROLL_OFFSET_PX = 96;
 
 export function CertificateShowcase({
   autoSlideInterval = 5000,
@@ -13,7 +13,23 @@ export function CertificateShowcase({
   const [direction, setDirection] = useState("next");
 
   const timerRef = useRef(null);
+  const stripRef = useRef(null);
+  const thumbRefs = useRef({});
   const activeCert = certificates[activeIndex];
+
+  // Keep the active thumbnail in view when auto-advance or user nav moves it offscreen.
+  useEffect(() => {
+    const strip = stripRef.current;
+    const thumb = thumbRefs.current[activeIndex];
+    if (!strip || !thumb) return;
+    const stripRect = strip.getBoundingClientRect();
+    const thumbRect = thumb.getBoundingClientRect();
+    if (thumbRect.left < stripRect.left) {
+      strip.scrollBy({ left: thumbRect.left - stripRect.left - SCROLL_OFFSET_PX, behavior: "smooth" });
+    } else if (thumbRect.right > stripRect.right) {
+      strip.scrollBy({ left: thumbRect.right - stripRect.right + SCROLL_OFFSET_PX, behavior: "smooth" });
+    }
+  }, [activeIndex]);
 
   // Framer Motion variants driven by `custom={direction}`.
   // exit: current slides OUT toward the OPPOSITE of the incoming direction
@@ -68,14 +84,12 @@ export function CertificateShowcase({
   return (
     <div>
       <motion.div
-        // className="flex flex-col sm:flex-row gap-y-5 mt-20 justify-between align-middle"
         className="mt-20 mb-10 text-center"
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div
-          // className="self-center flex flex-col gap-y-5"
           className="text-center"
         >
           <span className="inline-block font-mono w-full max-w-xl text-sm text-primary">
@@ -85,28 +99,6 @@ export function CertificateShowcase({
             Professional Credentials
           </span>
         </div>
-        {/* <div className="w-full self-center grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/4 p-2 backdrop-blur-xl sm:max-w-md">
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`flex flex-col items-center gap-1.5 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 ${
-              activeTab === "projects"
-                ? "bg-gradient-to-br from-purple-500/50 to-indigo-500/40 text-white shadow-[0_0_25px_-5px_rgba(168,85,247,0.6)]"
-                : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
-            }`}
-          >
-            Projects
-          </button>
-          <button
-            onClick={() => setActiveTab("certificates")}
-            className={`flex flex-col items-center gap-1.5 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 ${
-              activeTab === "certificates"
-                ? "bg-gradient-to-br from-purple-500/50 to-indigo-500/40 text-white shadow-[0_0_25px_-5px_rgba(168,85,247,0.6)]"
-                : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
-            }`}
-          >
-            Certificates
-          </button>
-        </div> */}
       </motion.div>
       <section className="w-full">
         <div className="w-full flex flex-col gap-6">
@@ -196,13 +188,20 @@ export function CertificateShowcase({
           </div>
 
           {/* Bottom Certificate Thumbnails Scroll Strip */}
-          <div className="w-full overflow-x-auto pb-2 scrollbar-thin">
+          <div
+            ref={stripRef}
+            className="w-full overflow-x-auto pb-2 [scrollbar-width:thin] [touch-action:pan-x_pan-y] overscroll-x-contain"
+          >
             <div className="flex gap-4 w-max">
               {certificates.map((cert, idx) => {
                 const isActive = idx === activeIndex;
                 return (
                   <button
                     key={cert.id || idx}
+                    ref={(el) => {
+                      if (el) thumbRefs.current[idx] = el;
+                      else delete thumbRefs.current[idx];
+                    }}
                     onClick={() => goToSlide(idx)}
                     className={`flex flex-col gap-2 w-36 md:w-44 p-2 rounded-xl text-left border transition-all duration-200 outline-none focus:outline-none ${
                       isActive
