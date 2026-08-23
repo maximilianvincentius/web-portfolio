@@ -7,4 +7,5 @@ export const technologies = [
   ["C#", "/assets/icons/csharp.svg"],
   ["Unity", "/assets/icons/unity.svg"],
   ["Autodesk Maya", "/assets/icons/autodesk-maya.svg"],
+  ["Adobe Substance Painter", "/assets/icons/substance-3d-painter.svg"],
 ];

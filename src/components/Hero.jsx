@@ -141,7 +141,7 @@ export default function Hero() {
                 engaging experiences.
               </p>
             </div>
-            <div className="flex flex-row flex-wrap gap-x-5 font-mono">
+            <div className="grid grid-cols-6 gap-x-2 max-w-75 font-mono">
               {technologies.map(([name, src]) => (
                 <div
                   key={name}
