@@ -21,10 +21,14 @@ export const projects = [
       "Fractals of Entropy is an Android top-down survival shooter game designed and developed by Maximilian Vincentius. Players navigate a stylized world, fight hostile enemies, collect resources, complete combat missions, and customize their weapon loadout through pickups and an in-game shop.",
     image: "/assets/projects/fractals-of-entropy.jpg",
     githubUrl: "https://github.com/maximilianvincentius/fractals-of-entropy",
-    techStack: [
-      "C#",
-      "Unity",
-      "Android"
-    ],
+    techStack: ["C#", "Unity", "Android"],
+  },
+  {
+    title: "Swastisvarna",
+    description:
+      "Swastisvarana is a community where seniors can socialize, explore their potential, empower one another, and remain active in society. It also encourages younger generations to care for, respect, and appreciate the elderly while helping them embrace their golden years with confidence and purpose.",
+    image: "/assets/projects/swastisvarna.jpg",
+    liveDemoUrl: "https://swastisvarna.org/",
+    techStack: ["React.js", "Supabase"],
   },
 ];

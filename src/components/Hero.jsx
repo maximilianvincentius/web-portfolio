@@ -125,7 +125,7 @@ export default function Hero() {
             <img
               alt="My Photo"
               className="w-48 h-48 max-h-30 rounded-full object-cover"
-              src="/assets/your_photo.jpg"
+              src="/assets/max-pp.jpeg"
             />
           </div>
           <div className="flex flex-col gap-y-5 mt-5">
