@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { certificates } from '../data/certificates';
+import { certificates } from "../data/certificates";
 
 const SCROLL_OFFSET_PX = 96;
 
-export function CertificateShowcase({
-  autoSlideInterval = 5000,
-}) {
+export function CertificateShowcase({ autoSlideInterval = 8000 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [direction, setDirection] = useState("next");
@@ -25,9 +23,15 @@ export function CertificateShowcase({
     const stripRect = strip.getBoundingClientRect();
     const thumbRect = thumb.getBoundingClientRect();
     if (thumbRect.left < stripRect.left) {
-      strip.scrollBy({ left: thumbRect.left - stripRect.left - SCROLL_OFFSET_PX, behavior: "smooth" });
+      strip.scrollBy({
+        left: thumbRect.left - stripRect.left - SCROLL_OFFSET_PX,
+        behavior: "smooth",
+      });
     } else if (thumbRect.right > stripRect.right) {
-      strip.scrollBy({ left: thumbRect.right - stripRect.right + SCROLL_OFFSET_PX, behavior: "smooth" });
+      strip.scrollBy({
+        left: thumbRect.right - stripRect.right + SCROLL_OFFSET_PX,
+        behavior: "smooth",
+      });
     }
   }, [activeIndex]);
 
@@ -64,7 +68,8 @@ export function CertificateShowcase({
   };
 
   const handlePrev = () => {
-    const prevIdx = (activeIndex - 1 + certificates.length) % certificates.length;
+    const prevIdx =
+      (activeIndex - 1 + certificates.length) % certificates.length;
     goToSlide(prevIdx);
   };
 
@@ -89,9 +94,7 @@ export function CertificateShowcase({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div
-          className="text-center"
-        >
+        <div className="text-center">
           <span className="inline-block font-mono w-full max-w-xl text-sm text-primary">
             Certifications
           </span>
@@ -157,7 +160,16 @@ export function CertificateShowcase({
                   aria-label="Previous certificate"
                   className="pointer-events-auto w-9 h-9 md:w-10 md:h-10 rounded-full bg-black/40 hover:bg-indigo-500/60 border border-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-5 h-5"
+                  >
                     <polyline points="15 18 9 12 15 6" />
                   </svg>
                 </button>
@@ -167,7 +179,16 @@ export function CertificateShowcase({
                   aria-label="Next certificate"
                   className="pointer-events-auto w-9 h-9 md:w-10 md:h-10 rounded-full bg-black/40 hover:bg-indigo-500/60 border border-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-5 h-5"
+                  >
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
                 </button>
@@ -190,11 +211,12 @@ export function CertificateShowcase({
           {/* Bottom Certificate Thumbnails Scroll Strip */}
           <div
             ref={stripRef}
-            className="w-full overflow-x-auto pb-2 [scrollbar-width:thin] [touch-action:pan-x_pan-y] overscroll-x-contain"
+            className="clean-scrollbar w-full overflow-x-auto pb-2 [touch-action:pan-x_pan-y] overscroll-x-contain"
           >
-            <div className="flex gap-4 w-max">
+            <div className="flex w-max gap-4">
               {certificates.map((cert, idx) => {
                 const isActive = idx === activeIndex;
+
                 return (
                   <button
                     key={cert.id || idx}
@@ -203,24 +225,25 @@ export function CertificateShowcase({
                       else delete thumbRefs.current[idx];
                     }}
                     onClick={() => goToSlide(idx)}
-                    className={`flex flex-col gap-2 w-36 md:w-44 p-2 rounded-xl text-left border transition-all duration-200 outline-none focus:outline-none ${
+                    className={`flex w-36 flex-col gap-2 rounded-xl border p-2 text-left outline-none transition-all duration-200 md:w-44 ${
                       isActive
-                        ? "bg-indigo-500/10 border-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.25)]"
-                        : "bg-white/[0.02] border-white/10 hover:bg-white/[0.06] hover:border-white/20 hover:-translate-y-0.5"
+                        ? "border-indigo-500 bg-indigo-500/10 shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                        : "border-white/10 bg-white/[0.02] hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
                     }`}
                     aria-label={`Select ${cert.title}`}
                   >
-                    <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-black/30">
+                    <div className="aspect-[4/3] w-full overflow-hidden rounded-lg bg-black/30">
                       <img
                         src={cert.image}
                         alt={cert.title}
-                        className={`w-full h-full object-cover transition-opacity duration-200 ${
+                        className={`h-full w-full object-cover transition-opacity duration-200 ${
                           isActive
                             ? "opacity-100"
                             : "opacity-75 hover:opacity-100"
                         }`}
                       />
                     </div>
+
                     <div className="px-1">
                       <span className="line-clamp-1 text-xs font-medium text-zinc-300">
                         {cert.title}

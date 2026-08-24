@@ -13,21 +13,6 @@ const _renderProject = (p, i) => (
           backgroundImage: `url(${p.image})`,
         }}
       />
-      {/* Mock browser preview overlay */}
-      {/* <div className="mock-window absolute inset-x-4 bottom-4 rounded-lg border border-white/15 bg-black/30 p-3 backdrop-blur-sm">
-        <div className="dots flex gap-1.5">
-          <i className="h-2 w-2 rounded-full bg-white/40" />
-          <i className="h-2 w-2 rounded-full bg-white/40" />
-          <i className="h-2 w-2 rounded-full bg-white/40" />
-        </div>
-        <div className="mock-line mt-2 h-2 w-3/4 rounded bg-white/20" />
-        <div className="mock-line mt-1.5 h-2 w-1/2 rounded bg-white/15" />
-        <div className="mock-blocks mt-2 flex gap-1.5">
-          <b className="h-5 w-5 rounded bg-white/20" />
-          <b className="h-5 w-5 rounded bg-white/15" />
-          <b className="h-5 w-5 rounded bg-white/10" />
-        </div>
-      </div> */}
       <span className="project-number absolute left-4 top-4 text-sm font-mono text-white/70">
         0{i + 1}
       </span>
@@ -39,7 +24,7 @@ const _renderProject = (p, i) => (
 
       <p className="flex-1 text-sm leading-relaxed text-gray-400">
         {p.description.length > 200
-          ? `${p.description.slice(0, 200)}...`
+          ? `${p.description.slice(0, 300)}...`
           : p.description}
       </p>
 

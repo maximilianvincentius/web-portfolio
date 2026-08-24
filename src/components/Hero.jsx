@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { technologies } from "../data/technologies";
-import { Github, Linkedin, FileText, Mail } from "lucide-react";
+import { Github, Linkedin, FileText, Mail, Download, X } from "lucide-react";
 
 const resumePath = "../../public/assets/MAXIMILIAN_VINCENTIUS_RESUME.pdf";
+const resumeFileName = "MAXIMILIAN_VINCENTIUS_RESUME.pdf";
 
 function TypingEffect({
   phrases = ["Tech enthusiast", "Future Computer Science Student"],
@@ -55,6 +56,22 @@ function TypingEffect({
 }
 
 export default function Hero() {
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isResumeOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setIsResumeOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isResumeOpen]);
+
   return (
     <section>
       <div className="flex flex-col">
@@ -106,17 +123,17 @@ export default function Hero() {
                 </span>
               </a>
 
-              <a
-                href={resumePath}
-                download="MAXIMILIAN VINCENTIUS_RESUME.pdf"
-                rel="noreferrer"
-                className="group flex items-center bg-white/5 backdrop-blur-md border border-white/10 p-2 rounded-xl text-white font-mono text-[10px] transition-all duration-300 hover:bg-white/15"
+              <button
+                type="button"
+                onClick={() => setIsResumeOpen(true)}
+                aria-label="Open resume preview"
+                className="group flex items-center bg-white/5 backdrop-blur-md border border-white/10 p-2 rounded-xl text-white font-mono text-[10px] transition-all duration-300 hover:bg-white/15 cursor-pointer"
               >
                 <FileText size={18} className="shrink-0" />
                 <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:max-w-[100px] group-hover:ml-2 opacity-0 group-hover:opacity-100">
                   Resume
                 </span>
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -166,6 +183,50 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {isResumeOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Resume preview"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={() => setIsResumeOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-5xl h-[85vh] bg-zinc-900/90 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
+              <span className="font-mono text-xs text-white/80">
+                Resume Preview
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={resumePath}
+                  download={resumeFileName}
+                  aria-label="Download resume"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-white transition-colors"
+                >
+                  <Download size={16} />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setIsResumeOpen(false)}
+                  aria-label="Close resume preview"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-white transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={resumePath}
+              title="Resume PDF"
+              className="w-full flex-1 bg-zinc-800"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

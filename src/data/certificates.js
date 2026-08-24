@@ -3,7 +3,7 @@ export const certificates = [
     id: "ucla_2026",
     title: "UCLA Game Lab Summer Institute 2026",
     description:
-      "Earned a 4.0 score while completing a hands-on game development program covering game design, character animation, world building, and game programming.",
+      "Earned a 4.0 UC Credits while completing a hands-on game development program covering game design, character animation, world building, and game programming.",
     image: "/assets/certificates/UCLA_GAME_LAB_SUMMER_INSTITUE_2026.jpeg",
     issuedBy: "University of California, Los Angeles",
     date: "2026",
