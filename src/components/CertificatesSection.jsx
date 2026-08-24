@@ -211,7 +211,21 @@ export function CertificateShowcase({ autoSlideInterval = 8000 }) {
           {/* Bottom Certificate Thumbnails Scroll Strip */}
           <div
             ref={stripRef}
-            className="clean-scrollbar w-full overflow-x-auto pb-2 [touch-action:pan-x_pan-y] overscroll-x-contain"
+            onWheel={(e) => {
+              if (e.deltaY !== 0) {
+                e.currentTarget.scrollLeft += e.deltaY;
+              }
+            }}
+            className="
+    clean-scrollbar
+    w-full
+    overflow-x-auto
+    scroll-smooth
+    pb-2
+    overscroll-x-contain
+    [touch-action:pan-x]
+    [-webkit-overflow-scrolling:touch]
+  "
           >
             <div className="flex w-max gap-4">
               {certificates.map((cert, idx) => {
