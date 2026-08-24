@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { technologies } from "../data/technologies";
 import { Github, Linkedin, FileText, Mail, Download, X } from "lucide-react";
 
-const resumePath = "../../public/assets/MAXIMILIAN_VINCENTIUS_RESUME.pdf";
+const resumePath = "/assets/MAXIMILIAN_VINCENTIUS_RESUME.pdf";
 const resumeFileName = "MAXIMILIAN_VINCENTIUS_RESUME.pdf";
 
 function TypingEffect({
