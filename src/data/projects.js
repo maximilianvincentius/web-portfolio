@@ -1,8 +1,8 @@
 export const projects = [
   {
-    title: "PhyxHub - Science Learning Hub",
+    title: "phyXhub - Science Learning Hub",
     description:
-      "An interactive physics learning platform developed as PhyxHub.com, designed to make motion and kinematics easier to understand through structured lessons, visualizations, and worked examples. The platform covers fundamental motion concepts, motion graphs, uniformly accelerated motion, and 1D/2D projectile motion.",
+      "An interactive physics learning platform developed as phyxhub.com, designed to make motion and kinematics easier to understand through structured lessons, visualizations, and worked examples. The platform covers fundamental motion concepts, motion graphs, uniformly accelerated motion, and 1D/2D projectile motion.",
     image: "/assets/projects/science-hub.jpg",
     liveDemoUrl: "https://phyxhub.com",
     techStack: [
