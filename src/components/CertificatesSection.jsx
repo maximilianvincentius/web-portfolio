@@ -112,10 +112,10 @@ export function CertificateShowcase({ autoSlideInterval = 8000 }) {
             {" "}
             Certifications{" "}
           </span>{" "}
-          <span className="inline-block w-full text-center text-4xl font-bold leading-tight text-white md:text-5xl">
+          <h2 className="inline-block w-full text-center text-4xl font-bold leading-tight text-white md:text-5xl">
             {" "}
             Professional Credentials{" "}
-          </span>{" "}
+          </h2>{" "}
         </div>{" "}
       </motion.div>{" "}
       <section className="w-full">

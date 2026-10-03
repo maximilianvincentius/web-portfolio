@@ -127,10 +127,10 @@ export default function ProjectsSection() {
           Explore my journey through projects, certifications, and technical
           expertise.{" "}
         </span>{" "}
-        <span className="block text-4xl font-bold leading-tight text-white md:text-5xl">
+        <h2 className="block text-4xl font-bold leading-tight text-white md:text-5xl">
           {" "}
           Portfolio Showcase{" "}
-        </span>{" "}
+        </h2>{" "}
       </motion.div>{" "}
       {/* Grid */}{" "}
       <div className=" grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3 ">
