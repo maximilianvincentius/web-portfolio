@@ -1,5 +1,15 @@
 export const projects = [
   {
+    title: "PointXTech",
+    role: "Founder & Lead Developer",
+    image: "/assets/projects/pointxtech.webp",
+    description:
+      "PointXTech is a technology company I founded and lead as Lead Developer. It builds digital products and engineering solutions — from web platforms to software systems. Explore the company, its services, and its work at pointxtech.com.",
+    liveDemoUrl: "https://pointxtech.com",
+    featured: true,
+    techStack: ["Web Development", "Software Engineering"],
+  },
+  {
     title: "phyXhub - Science Learning Hub",
     description:
       "An interactive physics learning platform developed as phyxhub.com, designed to make motion and kinematics easier to understand through structured lessons, visualizations, and worked examples. The platform covers fundamental motion concepts, motion graphs, uniformly accelerated motion, and 1D/2D projectile motion.",

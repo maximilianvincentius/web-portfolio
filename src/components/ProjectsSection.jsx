@@ -49,8 +49,15 @@ const ProjectCard = ({ project, index }) => {
       <div className="relative h-44 shrink-0 overflow-hidden">
         {" "}
         <div
-          className=" absolute inset-0 bg-cover bg-no-repeat grayscale transition-all duration-500 group-hover:grayscale-0 "
-          style={{ backgroundImage: `url(${project.image})` }}
+          className="absolute inset-0 bg-cover bg-no-repeat grayscale transition-all duration-500 group-hover:grayscale-0"
+          style={
+            project.image
+              ? { backgroundImage: `url(${project.image})` }
+              : {
+                  backgroundImage:
+                    "radial-gradient(circle at 30% 20%, #4338ca80, transparent 60%), radial-gradient(circle at 70% 80%, #0891b280, transparent 60%)",
+                }
+          }
         />{" "}
         <span className="absolute left-4 top-4 font-mono text-sm text-white/70">
           {" "}
@@ -62,6 +69,11 @@ const ProjectCard = ({ project, index }) => {
         {" "}
         {/* Title */}{" "}
         <h3 className="text-lg font-bold text-white"> {project.title} </h3>{" "}
+        {project.role ? (
+          <p className="font-mono text-xs tracking-wide text-primary">
+            {project.role}
+          </p>
+        ) : null}{" "}
         {/* Description */}{" "}
         <ExpandableText text={project.description} limit={200} />{" "}
         {/* Tech Stack */}{" "}
@@ -83,7 +95,7 @@ const ProjectCard = ({ project, index }) => {
           <a
             href={project.liveDemoUrl ? project.liveDemoUrl : project.githubUrl}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className=" inline-flex items-center gap-1 text-sm font-medium text-indigo-300 transition-colors hover:text-indigo-200 "
           >
             {" "}
