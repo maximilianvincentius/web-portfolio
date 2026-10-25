@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://maximilianvincentius.com/sitemap.xml
+Sitemap: https://www.maximilianvincentius.com/sitemap.xml
