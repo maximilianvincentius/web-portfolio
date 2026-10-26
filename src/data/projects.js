@@ -40,6 +40,19 @@ export const projects = [
     ],
   },
   {
+    title: "Toastator",
+    description:
+      "Toastator is a stylized, kitchen-themed game featuring a chef character, bread and crouton enemies, and a toaster boss.",
+    image: "/assets/projects/toastator.webp",
+    githubUrl: "https://github.com/maximilianvincentius/toastator",
+    techStack: [
+      "C#",
+      "Unity",
+      "Android",
+      "Adobe Photoshop",
+    ],
+  },
+  {
     title: "Swastisvarna",
     description:
       "Swastisvarana is a community where seniors can socialize, explore their potential, empower one another, and remain active in society. It also encourages younger generations to care for, respect, and appreciate the elderly while helping them embrace their golden years with confidence and purpose.",
