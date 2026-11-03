@@ -93,13 +93,21 @@ const ProjectCard = ({ project, index }) => {
         <div className="mt-auto flex items-center justify-end pt-2">
           {" "}
           <a
-            href={project.liveDemoUrl ? project.liveDemoUrl : project.githubUrl}
+            href={
+              project.playStoreUrl ??
+              project.liveDemoUrl ??
+              project.githubUrl
+            }
             target="_blank"
             rel="noopener noreferrer"
             className=" inline-flex items-center gap-1 text-sm font-medium text-indigo-300 transition-colors hover:text-indigo-200 "
           >
             {" "}
-            {project.liveDemoUrl ? "Live Demo" : "Repository"}{" "}
+            {project.playStoreUrl
+              ? "Google Play"
+              : project.liveDemoUrl
+                ? "Live Demo"
+                : "Repository"}{" "}
             <ArrowUpRight className="h-4 w-4" />{" "}
           </a>{" "}
         </div>{" "}

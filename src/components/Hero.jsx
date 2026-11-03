@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { technologies } from "../data/technologies";
-import { Github, Linkedin, FileText, Mail, Download, X } from "lucide-react";
+import { Github, Youtube, FileText, Mail, Download, X } from "lucide-react";
 
 const resumePath = "/assets/MAXIMILIAN_VINCENTIUS_RESUME.pdf";
 const resumeFileName = "MAXIMILIAN_VINCENTIUS_RESUME.pdf";
@@ -112,14 +112,14 @@ export default function Hero() {
               </a>
 
               <a
-                href="https://www.linkedin.com/in/maximilian-vincentius-ba123638a/"
+                href="https://www.youtube.com/@MaximilianVincentius"
                 target="_blank"
                 rel="noreferrer"
                 className="group flex items-center bg-white/5 backdrop-blur-md border border-white/10 p-2 rounded-xl text-white font-mono text-[10px] transition-all duration-300 hover:bg-white/15"
               >
-                <Linkedin size={18} className="shrink-0" />
+                <Youtube size={18} className="shrink-0" />
                 <span className="max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:max-w-[100px] group-hover:ml-2 opacity-0 group-hover:opacity-100">
-                  LinkedIn
+                  YouTube
                 </span>
               </a>
 
